@@ -170,21 +170,6 @@ io.on('connection', (socket) => {
     }
     broadcastPeers(roomName);
   });
-
-  function broadcastPeers(room) {
-    const r = ensureRoom(room);
-    // peers: [{id, username}]
-    const peers = Array.from(r.members).map((sid) => {
-      const s = io.sockets.sockets.get(sid);
-      return s ? { id: sid, username: s.data.user?.username || 'user' } : { id: sid, username: 'user' };
-    });
-    io.to(room).emit('peers', { peers });
-  }
-});
-
-const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => console.log(`Taxi Chat server listening on :${PORT}`));
-// dosyanın üstüne, oda üyeliğini takip etmek için:
 function inSameRoom(aId, bId) {
   // socket'ların current room'unu karşılaştır
   const a = io.sockets.sockets.get(aId);
@@ -209,5 +194,17 @@ socket.on('webrtc-ice', ({ to, candidate }) => {
   if (!inSameRoom(socket.id, to)) return;
   io.to(to).emit('webrtc-ice', { from: socket.id, candidate });
 });
+  function broadcastPeers(room) {
+    const r = ensureRoom(room);
+    // peers: [{id, username}]
+    const peers = Array.from(r.members).map((sid) => {
+      const s = io.sockets.sockets.get(sid);
+      return s ? { id: sid, username: s.data.user?.username || 'user' } : { id: sid, username: 'user' };
+    });
+    io.to(room).emit('peers', { peers });
+  }
+});
 
+const PORT = process.env.PORT || 4000;
+server.listen(PORT, () => console.log(`Taxi Chat server listening on :${PORT}`));
 
