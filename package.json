@@ -1,0 +1,16 @@
+{
+  "name": "taxi-chat-server",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "build": "echo \"Node server, nothing to build\""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": { "nodemon": "^3.1.0" }
+}
