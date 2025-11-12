@@ -3,13 +3,14 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import { Server } from 'socket.io';
-app.get('/healthz', (_req, res) => res.status(200).send('ok'));
 
 const app = express();
 app.use(cors());
 
 app.get('/', (_req, res) => {
   res.send('Taxi Chat Server OK');
+app.get('/healthz', (_req, res) => res.status(200).send('ok'));
+
 });
 
 const server = http.createServer(app);
@@ -83,5 +84,6 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => console.log(`Taxi Chat server listening on :${PORT}`));
+
 
 
