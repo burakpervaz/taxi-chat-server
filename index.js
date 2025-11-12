@@ -184,3 +184,30 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => console.log(`Taxi Chat server listening on :${PORT}`));
+// dosyanın üstüne, oda üyeliğini takip etmek için:
+function inSameRoom(aId, bId) {
+  // socket'ların current room'unu karşılaştır
+  const a = io.sockets.sockets.get(aId);
+  const b = io.sockets.sockets.get(bId);
+  if (!a || !b) return false;
+  // socket.rooms -> Set; ilki kendi ID, ikincisi katıldığı oda
+  const aRooms = [...a.rooms].filter(r => r !== a.id);
+  const bRooms = [...b.rooms].filter(r => r !== b.id);
+  return aRooms[0] && aRooms[0] === bRooms[0];
+}
+
+// ... webrtc relay olaylarında:
+socket.on('webrtc-offer', ({ to, sdp }) => {
+  if (!inSameRoom(socket.id, to)) return;          // oda koruması
+  io.to(to).emit('webrtc-offer', { from: socket.id, sdp });
+});
+socket.on('webrtc-answer', ({ to, sdp }) => {
+  if (!inSameRoom(socket.id, to)) return;
+  io.to(to).emit('webrtc-answer', { from: socket.id, sdp });
+});
+socket.on('webrtc-ice', ({ to, candidate }) => {
+  if (!inSameRoom(socket.id, to)) return;
+  io.to(to).emit('webrtc-ice', { from: socket.id, candidate });
+});
+
+
